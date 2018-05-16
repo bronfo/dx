@@ -1,6 +1,7 @@
 #coding:utf-8
 
 import os
+import asyncio
 from sanic import Sanic
 from sanic.response import text
 
@@ -18,7 +19,8 @@ async def upload(request):
 
 @app.route("/")
 async def index(request):
-    return text('Hello v1')
+    return text('Hello v3')
+
 
 # for test
 @app.websocket('/ws')
@@ -30,21 +32,23 @@ async def ws(request, ws):
                 await ws.send(bytes([48+i]))
                 i += 1
                 await asyncio.sleep(1)
-            except Exception:
-                print('eeeeeeeee2')
+            except Exception as e2:
+                print('eeeeeeeee2 %s' % e2)
+                break
     
     async def cf_recv(ws):
         while True:
             try:
                 await ws.recv()
-            except Exception:
-                print('eeeeeeeee3')
+            except Exception as e3:
+                print('eeeeeeeee3 %s' % e3)
+                break
     
     fs = [cf_send(ws), cf_recv(ws)]
     try:
         await asyncio.wait(fs)
-    except Exception:
-        print('eeeeeeeee1')
+    except Exception as e1:
+        print('eeeeeeeee1 %s' % e1)
 
 # end for test
 
