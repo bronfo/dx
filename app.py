@@ -42,7 +42,7 @@ async def ws(request, ws):
     
     fs = [cf_send(ws), cf_recv(ws)]
     try:
-        asyncio.as_completed(fs)
+        await asyncio.wait(fs)
     except Exception:
         print('eeeeeeeee1')
 
