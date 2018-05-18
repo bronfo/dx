@@ -6,6 +6,14 @@ import asyncio
 from sanic import Sanic
 from sanic.response import text
 
+import logging
+logging.basicConfig(format='%(asctime)s %(filename)s %(lineno)s: %(message)s')
+logger = logging.getLogger(os.path.basename(__file__))
+logger.setLevel(logging.ERROR)
+
+import websockets
+websockets.protocol.logger.setLevel(logging.ERROR)
+
 app = Sanic()
 app.static('/static', 'static')
 
@@ -20,7 +28,7 @@ async def upload(request):
 
 @app.route("/")
 async def index(request):
-    return text('Hello v5')
+    return text('Hello v6')
 
 
 # for test
