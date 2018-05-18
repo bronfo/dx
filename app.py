@@ -19,7 +19,7 @@ async def upload(request):
 
 @app.route("/")
 async def index(request):
-    return text('Hello v3')
+    return text('Hello v4')
 
 
 # for test
@@ -29,7 +29,7 @@ async def ws(request, ws):
         i = 0
         while True:
             try:
-                await ws.send(bytes([48+i]))
+                await ws.send(b's' + bytes([48+i]))
                 i += 1
                 await asyncio.sleep(1)
             except Exception as e2:
@@ -39,7 +39,8 @@ async def ws(request, ws):
     async def cf_recv(ws):
         while True:
             try:
-                await ws.recv()
+                d = await ws.recv()
+                print(d)
             except Exception as e3:
                 print('eeeeeeeee3 %s' % e3)
                 break
