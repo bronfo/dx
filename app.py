@@ -1,6 +1,7 @@
 #coding:utf-8
 
 import os
+import datetime
 import asyncio
 from sanic import Sanic
 from sanic.response import text
@@ -19,18 +20,18 @@ async def upload(request):
 
 @app.route("/")
 async def index(request):
-    return text('Hello v4')
+    return text('Hello v5')
 
 
 # for test
 @app.websocket('/ws')
 async def ws(request, ws):
     async def cf_send(ws):
-        i = 0
+        #i = 0
         while True:
             try:
-                await ws.send(b's' + bytes([48+i]))
-                i += 1
+                await ws.send(b's ' + bytes(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 'utf-8'))
+                #i += 1
                 await asyncio.sleep(1)
             except Exception as e2:
                 print('eeeeeeeee2 %s' % e2)
