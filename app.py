@@ -5,6 +5,7 @@ import datetime
 import asyncio
 from sanic import Sanic
 from sanic.response import text
+import utils
 
 import logging
 logging.basicConfig(format='%(asctime)s %(filename)s %(lineno)s: %(message)s')
@@ -28,7 +29,7 @@ async def upload(request):
 
 @app.route("/")
 async def index(request):
-    return text('Hello v6')
+    return text('Hello v7')
 
 
 # for test
@@ -38,7 +39,10 @@ async def ws(request, ws):
         #i = 0
         while True:
             try:
-                await ws.send(b's ' + bytes(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 'utf-8'))
+                d = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                d = b's ' + bytes(d, 'utf-8')
+                d = utils.crypt_string(d, b'mykey', True)
+                await ws.send(d)
                 #i += 1
                 await asyncio.sleep(1)
             except Exception as e2:
@@ -49,6 +53,7 @@ async def ws(request, ws):
         while True:
             try:
                 d = await ws.recv()
+                d = utils.crypt_string(d, b'mykey', False)
                 print(d)
             except Exception as e3:
                 print('eeeeeeeee3 %s' % e3)
