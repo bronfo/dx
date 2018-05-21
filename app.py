@@ -31,7 +31,7 @@ async def upload(request):
 
 @app.route("/")
 async def index(request):
-    return text('Hello v8')
+    return text('Hello v9')
 
 
 # for test
@@ -55,21 +55,21 @@ async def ws(request, ws):
         d = utils.crypt_string(d, KEY, False)
         print(d)
     async def cf_recv(ws):
-        len = -1
+        size = -1
         buf = b''
         while True:
             try:
                 d = await ws.recv()
                 if type(d) == bytes:
                     buf += d
-                    if len == -1:
+                    if size == -1:
                         if len(buf) >= 4:
-                            len = int.from_bytes(buf[:4], 'big')
+                            size = int.from_bytes(buf[:4], 'big')
                             buf = buf[4:]
-                    if len != -1 and len(buf) >= len:
-                        on_data(buf[:len])
-                        len = -1
-                        buf = buf[len:]
+                    if size != -1 and len(buf) >= size:
+                        on_data(buf[:size])
+                        size = -1
+                        buf = buf[size:]
                 else:
                     raise(Exception('unexcept str'))
             except Exception as e3:
