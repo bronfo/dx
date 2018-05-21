@@ -15,6 +15,8 @@ logger.setLevel(logging.ERROR)
 import websockets
 websockets.protocol.logger.setLevel(logging.ERROR)
 
+KEY = b'mykey'
+
 app = Sanic()
 app.static('/static', 'static')
 
@@ -29,7 +31,7 @@ async def upload(request):
 
 @app.route("/")
 async def index(request):
-    return text('Hello v7')
+    return text('Hello v8')
 
 
 # for test
@@ -41,7 +43,7 @@ async def ws(request, ws):
             try:
                 d = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 d = b's ' + bytes(d, 'utf-8')
-                d = utils.crypt_string(d, b'mykey', True)
+                d = utils.make_chunk(d, KEY)
                 await ws.send(d)
                 #i += 1
                 await asyncio.sleep(1)
@@ -49,12 +51,27 @@ async def ws(request, ws):
                 print('eeeeeeeee2 %s' % e2)
                 break
     
+    def on_data(d):
+        d = utils.crypt_string(d, KEY, False)
+        print(d)
     async def cf_recv(ws):
+        len = -1
+        buf = b''
         while True:
             try:
                 d = await ws.recv()
-                d = utils.crypt_string(d, b'mykey', False)
-                print(d)
+                if type(d) == bytes:
+                    buf += d
+                    if len == -1:
+                        if len(buf) >= 4:
+                            len = int.from_bytes(buf[:4], 'big')
+                            buf = buf[4:]
+                    if len != -1 and len(buf) >= len:
+                        on_data(buf[:len])
+                        len = -1
+                        buf = buf[len:]
+                else:
+                    raise(Exception('unexcept str'))
             except Exception as e3:
                 print('eeeeeeeee3 %s' % e3)
                 break
