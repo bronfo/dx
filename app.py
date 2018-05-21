@@ -31,7 +31,7 @@ async def upload(request):
 
 @app.route("/")
 async def index(request):
-    return text('Hello v9')
+    return text('Hello v10')
 
 
 # for test
@@ -68,8 +68,8 @@ async def ws(request, ws):
                             buf = buf[4:]
                     if size != -1 and len(buf) >= size:
                         on_data(buf[:size])
-                        size = -1
                         buf = buf[size:]
+                        size = -1
                 else:
                     raise(Exception('unexcept str'))
             except Exception as e3:
