@@ -17,6 +17,3 @@ def crypt_string(data, key, encode=True):
     xored = b''.join(bytes([x ^ y]) for (x,y) in izip(data, cycle(key)))
     return base64.b64encode(xored) if encode else xored
 
-def make_chunk(data, key):
-    data = crypt_string(data, key, True)
-    return int.to_bytes(len(data), 4, 'big') + data
