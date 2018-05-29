@@ -15,6 +15,7 @@ logger.setLevel(logging.ERROR)
 import websockets
 websockets.protocol.logger.setLevel(logging.ERROR)
 
+BUFSZ = 4096
 KEY = b'mykey'
 CMD_PREFIX = b'yb@cui_sf73G84mvc98y#X'
 CMD_CONNECT = CMD_PREFIX + b'c'
@@ -35,24 +36,34 @@ async def upload(request):
 
 @app.route("/")
 async def index(request):
-    return text('Hello v11')
+    return text('Hello v12')
 
 
-# for test
 @app.websocket('/ws')
 async def ws(request, ws):
     while True:
         d = await ws.recv()
         d = utils.crypt_string(d, KEY, False)
         logger.error(d)
-        if d == CMD_CONNECT:
-            # todo do connect
-            d = utils.crypt_string(CMD_CONNECT_OK, KEY, True)
-            await ws.send(d)
-            logger.error('CMD_CONNECT_OK')
-            break
-
-# end for test
+        if type(d) == bytes and d.startswith(CMD_CONNECT):
+            w = None
+            try:
+                host, port = d[len(CMD_CONNECT):].split(b':')
+                r, w = await asyncio.open_connection(host, int(port))
+            except Exception:
+                logger.error('connect error')
+            if w != None:
+                d = utils.crypt_string(CMD_CONNECT_OK, KEY, True)
+                await ws.send(d)
+                
+                # exchange
+                await utils.exchange(ws, r, w)
+            else:
+                d = utils.crypt_string(CMD_CONNECT_FALSE, KEY, True)
+                await ws.send(d)
+                logger.error('connect fail')
+        else:
+            logger.error('ws unexpected')
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
