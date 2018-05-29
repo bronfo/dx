@@ -8,7 +8,7 @@ from sanic.response import text
 import utils
 
 import logging
-logging.basicConfig(format='%(asctime)s %(filename)s %(lineno)s: %(message)s')
+logging.basicConfig(format='%(asctime)s: %(message)s')
 logger = logging.getLogger(os.path.basename(__file__))
 logger.setLevel(logging.ERROR)
 
@@ -36,7 +36,7 @@ async def upload(request):
 
 @app.route("/")
 async def index(request):
-    return text('Hello v12')
+    return text('Hello v13')
 
 
 @app.websocket('/ws')
@@ -44,8 +44,8 @@ async def ws(request, ws):
     while True:
         d = await ws.recv()
         d = utils.crypt_string(d, KEY, False)
-        logger.error(d)
         if type(d) == bytes and d.startswith(CMD_CONNECT):
+            logger.error(d[len(CMD_CONNECT):])
             w = None
             try:
                 host, port = d[len(CMD_CONNECT):].split(b':')

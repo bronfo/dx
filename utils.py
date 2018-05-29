@@ -3,6 +3,11 @@
 import sys
 import asyncio
 
+import logging, os
+logging.basicConfig(format='%(asctime)s: %(message)s')
+logger = logging.getLogger(os.path.basename(__file__))
+logger.setLevel(logging.DEBUG)
+
 BUFSZ = 4096
 KEY = b'mykey'
 CMD_PREFIX = b'yb@cui_sf73G84mvc98y#X'
@@ -51,12 +56,12 @@ async def exchange(ws, r, w):
                 if not peer_close:
                     w.close()
                 if ws_recv_close_resp and peer_close:
-                    print('break1')
+                    logger.info('break1')
                     break
             elif msg == CMD_CLOSE_RESP:
                 ws_recv_close_resp = True
                 if ws_recv_close_cmd and peer_close:
-                    print('break2')
+                    logger.info('break2')
                     break
             else:
                 w.write(msg)
@@ -77,5 +82,5 @@ async def exchange(ws, r, w):
                     ws_send_close_cmd = True
                     await ws.send(crypt_string(CMD_CLOSE, KEY, True))
                 elif ws_recv_close_resp and ws_recv_close_cmd:
-                    print('break3')
+                    logger.info('break3')
                     break
