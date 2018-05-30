@@ -4,7 +4,7 @@ import sys
 import asyncio
 
 import logging, os
-logging.basicConfig(format='%(asctime)s: %(message)s')
+logging.basicConfig(format='%(asctime)s %(filename)s %(lineno)s: %(message)s')
 logger = logging.getLogger(os.path.basename(__file__))
 logger.setLevel(logging.DEBUG)
 
@@ -63,13 +63,17 @@ async def exchange(ws, r, w):
                 if ws_recv_close_cmd and peer_close:
                     logger.info('break2')
                     break
-            else:
+            elif not w.transport._conn_lost:
                 w.write(msg)
             
             t1 = asyncio.Task(ws.recv())
             pending.add(t1)
         if t2 in done:
-            data = t2.result()
+            data = None
+            try:
+                data = t2.result()
+            except Exception:
+                pass
             if data:
                 data = crypt_string(data, KEY, True)
                 await ws.send(data)

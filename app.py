@@ -8,7 +8,7 @@ from sanic.response import text
 import utils
 
 import logging
-logging.basicConfig(format='%(asctime)s: %(message)s')
+logging.basicConfig(format='%(asctime)s %(filename)s %(lineno)s: %(message)s')
 logger = logging.getLogger(os.path.basename(__file__))
 logger.setLevel(logging.ERROR)
 
@@ -36,7 +36,7 @@ async def upload(request):
 
 @app.route("/")
 async def index(request):
-    return text('Hello v13')
+    return text('Hello v14')
 
 
 @app.websocket('/ws')
