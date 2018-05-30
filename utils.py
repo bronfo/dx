@@ -63,7 +63,7 @@ async def exchange(ws, r, w):
                 if ws_recv_close_cmd and peer_close:
                     logger.info('break2')
                     break
-            elif not w.transport._conn_lost:
+            elif (not hasattr(w.transport, '_conn_lost')) or (not w.transport._conn_lost):
                 w.write(msg)
             
             t1 = asyncio.Task(ws.recv())
